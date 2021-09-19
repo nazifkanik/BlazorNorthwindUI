@@ -1,0 +1,64 @@
+﻿@page "/productdetail/{productid:int}"
+@inject IProductService ProductService
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+
+
+
+@if (product != null)
+{
+    <h3>ProductDetail for @product.ProductName</h3>
+    <EditForm Model="@product" OnValidSubmit="@HandleSave">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <InputText PlaceHolder="Product Name" Class="form-control" Id="productName" @bind-Value="@product.ProductName" />
+            <ValidationMessage For="@(()=>product.ProductName)" />
+        </div>
+        <div class="form-group">
+            <InputNumber PlaceHolder="Units In Stock" Class="form-control" Id="unitsInStock" @bind-Value="@product.UnitsInStock" />
+            <ValidationMessage For="@(()=>product.UnitsInStock)" />
+        </div>
+        <div class="form-group">
+            <InputNumber PlaceHolder="Unit Price" Class="form-control" Id="unitPrice" @bind-Value="@product.UnitPrice" />
+            <ValidationMessage For="@(()=>product.UnitPrice)" />
+        </div>
+        <div class="form-group">
+            <InputTextArea PlaceHolder="Quantity Per Unit" Class="form-control" Id="quantityPerUnit" @bind-Value="@product.QuantityPerUnit" />
+            <ValidationMessage For="@(()=>product.QuantityPerUnit)" />
+        </div>
+        <div class="form-group">
+            @if (categories != null)
+            {
+                <InputSelectNumber Class="form-control" Id="categoryId" @bind-Value="@product.CategoryId">
+                    @foreach (var category in categories)
+                            {
+                        <option value="@category.CategoryId">@category.CategoryName</option>
+                            }
+                </InputSelectNumber>
+            }
+
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+    </EditForm>
+}
+
+@code {
+
+    [Parameter]
+    public int ProductId { get; set; }
+
+    ProductViewModel product;
+    CategoryListViewModel[] categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await ProductService.GetProductById(ProductId);
+        categories = await CategoryService.GetCategories();
+    }
+
+    private void HandleSave()
+    {
+        ProductService.Save(product);
+    }
+}

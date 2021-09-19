@@ -1,0 +1,24 @@
+﻿@page "/login"
+@inject IAuthService AuthService
+
+<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <InputText Placeholder="E-Posta" Class="form-control" @bind-Value="@loginModel.Email" />
+    </div>
+    <div class="form-group">
+        <InputText type="password" Placeholder="Şifre" Class="form-control" @bind-Value="@loginModel.Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Giriş</button>
+</EditForm>
+
+@code {
+
+    LoginModel loginModel = new LoginModel();
+    private async Task HandleLogin()
+    {
+        await AuthService.Login(loginModel);
+    }
+}
